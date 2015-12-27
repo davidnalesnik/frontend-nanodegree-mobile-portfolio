@@ -5,9 +5,9 @@ module.exports = function(grunt) {
         imagemin: {
             target: {
                 files: {
-                    '../dist/img/profilepic.jpg': 'img/profilepic.jpg',
-                    '../dist/views/images/pizzeria_small.jpg': 'views/images/pizzeria_small.jpg',
-                    '../dist/views/images/pizzeria_large.jpg': 'views/images/pizzeria_large.jpg'
+                    'dist/img/profilepic.jpg': 'src/img/profilepic.jpg',
+                    'dist/views/images/pizzeria_small.jpg': 'src/views/images/pizzeria_small.jpg',
+                    'dist/views/images/pizzeria_large.jpg': 'src/views/images/pizzeria_large.jpg'
                 }
             }
         },
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
                     tag: ''
                 },
                 files: {
-                    '../dist/index.html': 'index.html'
+                    'dist/index.html': 'src/index.html'
                 }
             }
         },
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
                     minifyJS: true,
                 },
                 files: {
-                    '../dist/index.html': '../dist/index.html'
+                    'dist/index.html': 'dist/index.html'
                 }
             }
         }
