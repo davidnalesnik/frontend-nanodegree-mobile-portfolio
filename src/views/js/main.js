@@ -359,6 +359,7 @@ var makeRandomPizza = function() {
 };
 
 // returns a DOM element for each pizza
+
 var pizzaElementGenerator = function(i) {
   var pizzaContainer,             // contains pizza title, image and list of ingredients
       pizzaImageContainer,        // contains the pizza image
@@ -422,6 +423,7 @@ var resizePizzas = function(size) {
   changeSliderLabel(size);
 
    // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
+
   function determineDx (elem, size) {
     var oldWidth = elem.offsetWidth;
     var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
@@ -449,15 +451,24 @@ var resizePizzas = function(size) {
   }
 
   // Iterates through pizza elements on the page and changes their widths
-  function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
-    }
-  }
 
-  changePizzaSizes(size);
+  // CHANGES:  The original for-loop was terribly inefficient.  Not only did
+  // it request randomPizzaContainer 4x per iteration, recalculate its length
+  // each iteration, and look up the same array element 3x; it also called
+  // determineDx for each of the 100 pizzas.  since the pizzas to resize are
+  // always identical in size, we can use the first pizza as a representative.
+  // We cache the new width and apply it to each pizzaContainer.
+  var containers = document.querySelectorAll(".randomPizzaContainer");
+  var containerLen = containers.length;
+  var firstContainer = containers[0];
+  var dx = determineDx(firstContainer, size);
+  var newwidth = (firstContainer.offsetWidth + dx) + 'px';
+
+  // CHANGES: Originally, we defined a function ('changePizzaSizes') and
+  // immediately called it to execute the enclosed loop.  Simply run the loop!
+  for (var i = 0; i < containerLen; i++) {
+    containers[i].style.width = newwidth;
+  }
 
   // User Timing API is awesome
   window.performance.mark("mark_end_resize");
@@ -503,8 +514,16 @@ function updatePositions() {
   window.performance.mark("mark_start_frame");
 
   var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+  // CHANGES:
+  // Move request for document.body.ScrollTop outside of the for-loop and
+  // cache it.  This is the biggest timesaver.
+  // calculate length of array once, outside of for-loop
+  // declare phase outside of loop
+  var itemsLen = items.length;
+  var scrollT = document.body.scrollTop / 1250;
+  var phase;
+  for (var i = 0; i < itemsLen; i++) {
+    phase = Math.sin(scrollT + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
 
