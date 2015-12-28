@@ -7,7 +7,8 @@ module.exports = function(grunt) {
                 files: {
                     'dist/img/profilepic.jpg': 'src/img/profilepic.jpg',
                     'dist/views/images/pizzeria_small.jpg': 'src/views/images/pizzeria_small.jpg',
-                    'dist/views/images/pizzeria_large.jpg': 'src/views/images/pizzeria_large.jpg'
+                    'dist/views/images/pizzeria_large.jpg': 'src/views/images/pizzeria_large.jpg',
+                    'dist/views/images/pizza.png': 'src/views/images/pizza.png'
                 }
             }
         },
@@ -16,11 +17,11 @@ module.exports = function(grunt) {
             target: {
                 options:{
                     cssmin: true,
-                    // uglify: true,
                     tag: ''
                 },
                 files: {
-                    'dist/index.html': 'src/index.html'
+                    'dist/index.html': 'src/index.html',
+                    'dist/views/pizza.html': 'src/views/pizza.html'
                 }
             }
         },
@@ -33,7 +34,8 @@ module.exports = function(grunt) {
                     minifyJS: true,
                 },
                 files: {
-                    'dist/index.html': 'dist/index.html'
+                    'dist/index.html': 'dist/index.html',
+                    'dist/views/pizza.html': 'dist/views/pizza.html'
                 }
             }
         }
