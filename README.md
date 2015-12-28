@@ -64,7 +64,7 @@ changes.
 1. In order to build the project, we use various Grunt plug-ins.  Grunt
 requires Node.js, so you may need to [install it](https://nodejs.org/en/).
 
-1. In the terminal, navigate to the `src` directory and type
+1. In the terminal, navigate to the root directory of the project and type
 
   `npm install`
 
