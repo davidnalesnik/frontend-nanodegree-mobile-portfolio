@@ -512,19 +512,19 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
-
-  var items = document.querySelectorAll('.mover');
   // CHANGES:
   // Move request for document.body.ScrollTop outside of the for-loop and
   // cache it.  This is the biggest timesaver.
   // calculate length of array once, outside of for-loop
   // declare phase outside of loop
-  var itemsLen = items.length;
-  var scrollT = document.body.scrollTop / 1250;
+  // use global array of sliding pizzas instead of searching for pizzas each
+  // time we update
+  var len = sliders.length;
+  var dy = document.body.scrollTop / 1250;
   var phase;
-  for (var i = 0; i < itemsLen; i++) {
-    phase = Math.sin(scrollT + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  for (var i = 0; i < len; i++) {
+    phase = Math.sin(dy + (i % 5));
+    sliders[i].style.left = sliders[i].basicLeft + 100 * phase + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -545,6 +545,12 @@ window.addEventListener('scroll', updatePositions);
 // CHANGES:
 // Originally, 200 pizzas were created, even though not all would be visible.
 // Create only as many pizzas as will fill the screen.
+// We now save the pizzas created to an array (sliders), so that we don't
+// need to search for them each time we update their positions.
+
+// Cache of sliding pizzas
+var sliders = [];
+
 document.addEventListener('DOMContentLoaded', function() {
   var w = window.innerWidth;
   var h = window.innerHeight;
@@ -561,6 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
+    sliders.push(elem);
   }
   updatePositions();
 });
