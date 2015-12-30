@@ -33,7 +33,7 @@ end of the document body.
 image is now used for `pizza.html`.  Image quality was reduced somewhat to
 further shrink file sizes.  Software used: GIMP 2.8.
 
-1. Images were further minimized with the `grunt-contrib-imagemin` plug-in and
+1. Images were further minified with the `grunt-contrib-imagemin` plug-in and
 inlined in a Base64 encoding with the `grunt-inline` plug-in.
 
 1. CSS from `css/style.css` and `css/print.css` is minified and inlined
@@ -45,15 +45,35 @@ using the `grunt-inline` plug-in.
 
 #### Optimizations to `views/js/main.js`
 
-Due to inefficient code, the performance of the pizzeria page `pizza.html`
-lagged behind a refresh rate of 60 frames per second, and resizing of the
-pizza images was sluggish.
+Due to inefficient code in this file, the performance of the original pizzeria
+page `pizza.html` lagged behind a refresh rate of 60 frames per second, and
+resizing of the pizza images was sluggish.
 
-Optimizations to `views/js/main.js` are detailed in code comments added
-to the version of that file in the `src` directory.
+The main optimizations involve reducing assets, caching where possible, and
+avoiding expensive operations within loops.  Changes include
 
-Note that this code has been minified and inlined in the version of
-`pizza.html` in the `dist` directory.
+1. creating only enough background pizzas to fill the screen.  For typical
+media, we need considerably fewer images than 200.
+
+1. using a single pizza as a representative when resizing with the slider.
+Thus, expensive calculations can be done once instead of 100 times.
+
+1. moving cachable information outside of the for-loops used to resize pizzas
+and update the positions of animated background pizzas.  For example, we no
+longer search the DOM for all menu pizza elements every time we need to refer
+to them (400 times!)
+
+1. storing references to the background pizzas in an array.  We now don't
+have to search for them each time we update their positions.
+
+1. using faster methods to search the DOM.  We favor `getElementById` over
+`querySelectorAll`, for example.
+
+1. minifying (removal of spaces, comments) in the production version.
+
+More information on optimization is found in code comments added
+to `src/views/js/main.js`.  (These are absent in the further optimized
+version in the `dist` directory.)
 
 #### Building the production version
 
