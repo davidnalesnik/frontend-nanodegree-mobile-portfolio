@@ -404,16 +404,21 @@ var resizePizzas = function(size) {
   window.performance.mark("mark_start_resize");   // User Timing API function
 
   // Changes the value for the size of the pizza above the slider
+
+/*  CHANGES:
+    We now use the method getElementById since it is faster than
+    querySelector.
+*/
   function changeSliderLabel(size) {
     switch(size) {
       case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
+        document.getElementById("pizzaSize").innerHTML = "Small";
         return;
       case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
+        document.getElementById("pizzaSize").innerHTML = "Medium";
         return;
       case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
+        document.getElementById("pizzaSize").innerHTML = "Large";
         return;
       default:
         console.log("bug in changeSliderLabel");
@@ -426,7 +431,10 @@ var resizePizzas = function(size) {
 
   function determineDx (elem, size) {
     var oldWidth = elem.offsetWidth;
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
+    /* CHANGES:
+       We use getElementById here instead of the slower querySelector.
+    */
+    var windowWidth = document.getElementById("randomPizzas").offsetWidth;
     var oldSize = oldWidth / windowWidth;
 
     // TODO: change to 3 sizes? no more xl?
@@ -452,20 +460,32 @@ var resizePizzas = function(size) {
 
   // Iterates through pizza elements on the page and changes their widths
 
-  // CHANGES:  The original for-loop was terribly inefficient.  Not only did
-  // it request randomPizzaContainer 4x per iteration, recalculate its length
-  // each iteration, and look up the same array element 3x; it also called
-  // determineDx for each of the 100 pizzas.  since the pizzas to resize are
-  // always identical in size, we can use the first pizza as a representative.
-  // We cache the new width and apply it to each pizzaContainer.
-  var containers = document.querySelectorAll(".randomPizzaContainer");
+/*  CHANGES:
+    The original for-loop was terribly inefficient.  It requested
+    randomPizzaContainer 4x using the inefficient querySelectorAll,
+    recalculated array length, and looked up the same array element 3x--all of
+    this **every iteration**.  We now cache this information outside the loop
+    and in a variable within the loop.  We use getElementsByClassName since it
+    is faster than querySelectorAll.
+
+    The original code also called determineDx for each of the 100 pizzas.
+    Since the pizzas to resize are identical, we can use the first pizza
+    as a representative.  We cache the new width and apply it to each
+    pizzaContainer.
+
+    The original code also defined a function ('changePizzaSizes') as a
+    wrapper for the for-loop.  This function was immediately called.  We
+    remove the wrapper and run the loop directly.  A comment is added to
+    substitute for the role of the function name as documentation.
+*/
+
+  var containers = document.getElementsByClassName("randomPizzaContainer");
   var containerLen = containers.length;
   var firstContainer = containers[0];
   var dx = determineDx(firstContainer, size);
   var newwidth = (firstContainer.offsetWidth + dx) + 'px';
 
-  // CHANGES: Originally, we defined a function ('changePizzaSizes') and
-  // immediately called it to execute the enclosed loop.  Simply run the loop!
+  // Change all pizza sizes.
   for (var i = 0; i < containerLen; i++) {
     containers[i].style.width = newwidth;
   }
@@ -480,9 +500,16 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
+
+/*  CHANGES:
+    We cache the randomPizza object lookup.  Referring to it with a variable
+    local to the for-loop saves time since the interpreter doesn't need to
+    travel to a higher scope each time it needs the variable. See http://wellcaffeinated.net/articles/2012/09/07/your-javascript-is-slow-common-and-not-so-common-optimizations/
+*/
+var pizzasDiv = document.getElementById("randomPizzas");
 for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
-  pizzasDiv.appendChild(pizzaElementGenerator(i));
+  var pD = pizzasDiv;
+  pD.appendChild(pizzaElementGenerator(i));
 }
 
 // User Timing API again. These measurements tell you how long it took to generate the initial pizzas
@@ -509,21 +536,20 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
+
+/*  CHANGES:
+    --Move document.body.ScrollTop lookup outside the for-loop and cache it.
+    --Calculate length of array once, outside the for-loop.
+    --Use global array of sliding pizzas instead of searching for them each
+    time we call this function.
+*/
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
-  // CHANGES:
-  // Move request for document.body.ScrollTop outside of the for-loop and
-  // cache it.  This is the biggest timesaver.
-  // calculate length of array once, outside of for-loop
-  // declare phase outside of loop
-  // use global array of sliding pizzas instead of searching for pizzas each
-  // time we update
   var len = sliders.length;
   var dy = document.body.scrollTop / 1250;
-  var phase;
   for (var i = 0; i < len; i++) {
-    phase = Math.sin(dy + (i % 5));
+    var phase = Math.sin(dy + (i % 5));
     sliders[i].style.left = sliders[i].basicLeft + 100 * phase + 'px';
   }
 
@@ -542,11 +568,14 @@ window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
 
-// CHANGES:
-// Originally, 200 pizzas were created, even though not all would be visible.
-// Create only as many pizzas as will fill the screen.
-// We now save the pizzas created to an array (sliders), so that we don't
-// need to search for them each time we update their positions.
+/*  CHANGES:
+    Originally, 200 pizzas were created, even though not all would be visible.
+    We now create only as many pizzas as will fill the screen.
+    We now save the pizzas created to an array (sliders), so that we don't
+    need to search for them each time we update their positions.
+    Object lookup has been moved out of loop, and we use a faster
+    method (getElementById instead of querySelector).
+*/
 
 // Cache of sliding pizzas
 var sliders = [];
@@ -558,6 +587,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var cols = Math.ceil(w / s);
   var rows = Math.ceil(h / s);
   var pizzaCount = cols * rows;
+  var movingPizzas = document.getElementById("movingPizzas1");
   for (var i = 0; i < pizzaCount; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
@@ -566,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+    movingPizzas.appendChild(elem);
     sliders.push(elem);
   }
   updatePositions();
