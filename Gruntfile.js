@@ -4,12 +4,34 @@ module.exports = function(grunt) {
 
         imagemin: {
             target: {
-                files: {
-                    'dist/img/profilepic.jpg': 'src/img/profilepic.jpg',
-                    'dist/views/images/pizzeria_small.jpg': 'src/views/images/pizzeria_small.jpg',
-                    'dist/views/images/pizzeria_large.jpg': 'src/views/images/pizzeria_large.jpg',
-                    'dist/views/images/pizza.png': 'src/views/images/pizza.png'
-                }
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: ['**/*.{png,jpg}'],
+                    dest: 'dist/'
+                }]
+            }
+        },
+
+        uglify: {
+            target: {
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: '**/*.js',
+                    dest: 'dist/'
+                }]
+            }
+        },
+
+        cssmin: {
+            target: {
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: '**/*.css',
+                    dest: 'dist/',
+                }]
             }
         },
 
@@ -17,12 +39,13 @@ module.exports = function(grunt) {
             target: {
                 options:{
                     cssmin: true,
-                    tag: ''
                 },
-                files: {
-                    'dist/index.html': 'src/index.html',
-                    'dist/views/pizza.html': 'src/views/pizza.html'
-                }
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: ['**/*.html'],
+                    dest: 'dist/'
+                }]
             }
         },
 
@@ -33,18 +56,21 @@ module.exports = function(grunt) {
                     collapseWhitespace: true,
                     minifyJS: true,
                 },
-                files: {
-                    'dist/index.html': 'dist/index.html',
-                    'dist/views/pizza.html': 'dist/views/pizza.html'
-                }
+                files: [{
+                    expand: true,
+                    cwd: 'dist/',
+                    src: ['**/*.html'],
+                    dest: 'dist/'
+                }]
             }
         }
-        
     });
 
     grunt.loadNpmTasks('grunt-contrib-imagemin');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-inline');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
-    
-    grunt.registerTask('default', ['imagemin', 'inline', 'htmlmin']);  
+
+    grunt.registerTask('default', ['imagemin','uglify','cssmin','inline','htmlmin']);
 };
