@@ -542,6 +542,7 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
     --Calculate length of array once, outside the for-loop.
     --Use global array of sliding pizzas instead of searching for them each
     time we call this function.
+    --Use local variable for repeated array reference.
 */
 function updatePositions() {
   frame++;
@@ -550,7 +551,8 @@ function updatePositions() {
   var dy = document.body.scrollTop / 1250;
   for (var i = 0; i < len; i++) {
     var phase = Math.sin(dy + (i % 5));
-    sliders[i].style.left = sliders[i].basicLeft + 100 * phase + 'px';
+    var slider = sliders[i];
+    slider.style.left = slider.basicLeft + 100 * phase + 'px';
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
