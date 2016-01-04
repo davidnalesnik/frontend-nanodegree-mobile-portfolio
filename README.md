@@ -1,6 +1,6 @@
 ## Website Performance Optimization portfolio project
 
-The goal of this project was to improve the performance of an existing web
+The goal of this project is to improve the performance of an existing web
 project, found
 [here](https://github.com/udacity/frontend-nanodegree-mobile-portfolio).
 
@@ -8,41 +8,62 @@ project, found
 
 Download/unzip or clone the project to your computer.
 
-The repository contains both a source directory for development purposes (`src`)
-and a production directory for deployment on the web (`dist`).
+The repository contains both a source directory for development purposes
+(`src`) and an optimized production directory for deployment on the web
+(`dist`).
 
-Open the file `index.html` within either `src` or `dist` in a browser.
+You can view the project in a browser by opening the file `index.html` in
+either the `src` or `dist` directories.
 
-#### Optimizations to `index.html`
+#### Optimizations to `index.html` and other HTML files
 
-The main page of the original project scored poorly on Google's PageSpeed
-Insights development tool, on both mobile and desktop environments.
+The main page of the original repository scores poorly on Google's PageSpeed
+Insights development tool, in both mobile and desktop environments.  In order
+to improve the PageSpeed score to a value higher than 90%, a number of changes
+have been made to `index.html` and the resources it uses.
 
-In order to improve the PageSpeed score to a value higher than 90%, a number
-of changes have been made to `index.html`.  (The full set of optimizations
-are visible in the `dist` directory.)
+Though `index.html` is the focus of the first part of this project,
+optimizations have been applied to all HTML files and relevant resources.  Key
+tasks have been automated with Grunt.
 
-Optimizations are as follows:
+Optimizations are fully visible in the `dist` directory.
 
-1. Google analytics script has been made asynchronous.
+Optimizations to HTML files/resources and `index.html` in particular are as
+follows:
 
-1. A media attribute has been added so `css/print.css` will only be loaded when
-printing is requested.
+1. Google analytics script has been made asynchronous in `index.html` and
+other files where it is referenced.  Where omitted, `async` has been added
+to `js/perfmatters.js` links.
 
-1. The web font is now loaded by Web Font Loader code placed at the
-end of the document body.
+1. A media attribute has been added to `css/print.css` links in `index.html`
+and other HTML files.  Thus, it will only be loaded when printing is
+requested.
 
-1. Images are optimized.  The pizzeria image is optimized to a thumbnail size.
-A larger optimized image is now used for `pizza.html`.  Image quality was
-reduced somewhat to further shrink file sizes.  Software used: GIMP 2.8.
+1. The web font is now loaded asynchronously in `index.html` by [Web Font
+Loader code](https://github.com/typekit/webfontloader) placed at the end of
+the document body.
 
-1. Images were further minified with the `grunt-contrib-imagemin` plug-in and
-inlined as Base64 data with the `grunt-inline` plug-in.
+1. The pizzeria image is optimized to a thumbnail size for use in `index.html`.
+Consequently, a larger optimized image is now used for `pizza.html`.  Image
+quality for pizzeria images is reduced somewhat to shrink file sizes further.
+Software used: GIMP 2.8.
 
-1. CSS in `css/print.css` is minified, and CSS in `css/style.css` is both
-minified and inlined using the `grunt-inline` plug-in.
+1. All images (including the resized/compressed pizzeria images described
+above) have been minified with the `grunt-contrib-imagemin` plug-in.
 
-1. HTML (including inlined JS) is minified with `grunt-contrib-htmlmin`.
+1. Two images were inlined as Base64 data in `index.html` with the
+`grunt-inline` plug-in.  (The pizzeria image was also inlined as data in
+`pizza.html`.)
+
+1. All JS files have been uglified (mangled and minified) with the
+`grunt-contrib-uglify` plug-in.
+
+1. All CSS has been minified with the `grunt-contrib-cssmin` plugin.
+
+1. CSS other than print-only is inlined in every HTML file using the
+`grunt-inline` plug-in.
+
+1. All HTML (including inlined JS) is minified with `grunt-contrib-htmlmin`.
 
 #### Optimizations to `views/js/main.js`
 
@@ -76,22 +97,16 @@ Thus, calculations can be done once instead of 100 times.
 1. using faster methods to search the DOM.  We favor `getElementById` and
 `getElementsByClassName` over `querySelector` and `querySelectorAll`.
 
-1. minifying (removal of whitespace, comments) in the production version.
-
-#### Optimizations to `views/pizza.html`
-
-1. The optimized code in `dist/views/js/main.js` is minified and inlined.
-
-1. External CSS resources are minified and inlined.
-
-1. The pizzeria image has been minified with GIMP and the Grunt
-`contrib-imagemin` plug-in.
+1. uglifying (mangling and minifying) and inlining code in the production
+version.
 
 #### Building the production version
 
 Should you wish to modify the code of the source directory, you will need
 to rebuild the production directory to see the optimized results of your
 changes.
+
+Steps to follow:
 
 1. In order to build the project, we use various [Grunt](http://gruntjs.com/)
 plug-ins.  Grunt requires Node.js, so you may need to
@@ -111,6 +126,8 @@ plug-ins.  Grunt requires Node.js, so you may need to
 
   ```
   npm install grunt-contrib-imagemin --save-dev
+  npm install grunt-contrib-uglify --save-dev
+  npm install grunt-contrib-cssmin --save-dev
   npm install grunt-inline --save-dev
   npm install grunt-contrib-htmlmin --save-dev
   ```
@@ -119,10 +136,9 @@ plug-ins.  Grunt requires Node.js, so you may need to
 
   `grunt`
 
-  This will run the Grunt plug-ins and modify various files in the
-  production directory.
+  This will run the Grunt plug-ins, creating the `dist` directory in the
+  process (if it does not already exist).
 
-1. Note that manual changes should be made only in the `src` directory to those
-file touched by `Gruntfile.js`.  Running Grunt will overwrite any changes
-you make to these files in the `dist` directory since it uses `src` as its
-source.
+Important: Manual changes should be made only to files in the `src` directory.
+Running Grunt will overwrite any changes you make to these files in the `dist`
+directory, since Grunt uses `src` as its source.
