@@ -15,6 +15,14 @@ The repository contains both a source directory for development purposes
 You can view the project in a browser by opening the file `index.html` in
 either the `src` or `dist` directories.
 
+Testing the project with [Google's PageSpeed Insights]
+(https://developers.google.com/speed/pagespeed/insights/) requires that
+the site be accessible through a public URL.  You may obtain a secure URL by
+running a local server, navigating to the server in a browser, and running
+[ngrok](https://ngrok.com/).  More detailed instructions are available in Part
+1 of the README of the [original project]
+(https://github.com/udacity/frontend-nanodegree-mobile-portfolio).
+
 #### Optimizations to `index.html` and other HTML files
 
 The main page of the original repository scores poorly on Google's PageSpeed
